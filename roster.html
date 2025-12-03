@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="text-center mb-5">
+        <span class="text-success">{{ team.name }}</span> Roster
+    </h2>
+    
+    {# --- TEAM DETAILS CARD --- #}
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Team Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Manager:</strong> {{ team.manager_name|default:"N/A" }}</p>
+                    <p>
+                        <strong>Contact Person:</strong> {{ team.contact_person|default:"N/A" }} | 
+                        <strong>Phone:</strong> {{ team.phone_number|default:"N/A" }}
+                    </p>
+                    <p>
+                        <strong>Total Points:</strong> <span class="badge bg-success">{{ team.pts }}</span> | 
+                        <strong>Wins:</strong> {{ team.w }} | 
+                        <strong>Losses:</strong> {{ team.l }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {# --- PLAYER ROSTER TABLE --- #}
+    <h4 class="text-center mb-3">Player Statistics</h4>
+    
+    {% if players %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped shadow-sm">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Player Name</th>
+                        <th scope="col">Position</th>
+                        <th scope="col">ID Number</th>
+                        <th scope="col" class="text-center">Goals ⚽</th>
+                        <th scope="col" class="text-center">Yellow Cards 🟨</th>
+                        <th scope="col" class="text-center">Red Cards 🟥</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                        <tr>
+                            <td class="fw-bold">{{ player.jersey_number|default:"-" }}</td>
+                            <td>
+                                <a href="#">{{ player.name }}</a>
+                            </td>
+                            <td>{{ player.position|default:"N/A" }}</td>
+                            <td>{{ player.id_number|default:"N/A" }}</td>
+                            <td class="text-center fw-bold text-success">{{ player.total_goals }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-warning text-dark">{{ player.yellow_cards }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-danger">{{ player.red_cards }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            No players registered for this team yet.
+        </div>
+    {% endif %}
+    
+    <div class="mt-5 text-center">
+        <a href="{% url 'league:team_list' %}" class="btn btn-secondary">&larr; Back to All Teams</a>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,41 @@
+{% extends "league/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2 style="text-align: center; color: #dc3545; margin-bottom: 30px;">{{ page_title }}</h2>
+    
+    {% if scorers %}
+    <table class="table" style="width: 70%; margin: 0 auto; border-collapse: collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <thead>
+            <tr style="background-color: #007bff; color: white;">
+                <th style="padding: 12px; border: 1px solid #0056b3; width: 5%;">#</th>
+                <th style="padding: 12px; border: 1px solid #0056b3; text-align: left;">Player Name</th>
+                <th style="padding: 12px; border: 1px solid #0056b3; text-align: left;">Team</th>
+                <th style="padding: 12px; border: 1px solid #0056b3; width: 15%;">Goals</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in scorers %}
+            <tr style="background-color: {% cycle 'white' '#f9f9f9' %};">
+                <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">{{ forloop.counter }}</td>
+                <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">{{ player.name }}</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">
+                    <a href="{% url 'roster' team_slug=player.team.slug %}" style="color: #007bff; text-decoration: none;">
+                        {{ player.team.name }}
+                    </a>
+                </td>
+                <td style="padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; font-size: 1.1em;">
+                    {{ player.goals_count }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 50px; color: #dc3545;">
+        <p style="font-size: 1.2em;">No goals have been recorded yet.</p>
+        <p>Start recording match results in the Admin Panel!</p>
+    </div>
+    {% endif %}
+{% endblock %}

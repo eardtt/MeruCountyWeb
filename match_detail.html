@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="text-center mb-4">
+        {{ match.home_team.name }} <span class="text-primary">vs</span> {{ match.away_team.name }}
+    </h2>
+    <h3 class="text-center mb-5">
+        <span class="badge bg-dark">{{ match.home_score }}</span> 
+        <span class="text-muted mx-2">-</span> 
+        <span class="badge bg-dark">{{ match.away_score }}</span>
+    </h3>
+
+    <div class="row mb-5">
+        {# MATCH DETAILS - Now full width (col-md-12) #}
+        <div class="col-md-12">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Match Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date:</strong> {{ match.match_date|date:"l, M d, Y" }}</p>
+                    <p><strong>Time:</strong> {{ match.match_date|time:"P" }}</p>
+                    <p><strong>Venue:</strong> {{ match.venue|default:"TBD" }}</p>
+                    <p><strong>Referee:</strong> {{ match.referee.name|default:"N/A" }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if match.is_played %}
+                            <span class="badge bg-success">Final Score</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Upcoming</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {# The referee report column has been completely removed #}
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-center mb-4">Match Events</h4>
+        </div>
+
+        {# --- GOALS SECTION (Chronological Timeline) --- #}
+        <div class="col-md-6">
+            <h5 class="text-center mb-3 text-success">⚽ Goals ({{ match.home_score }} - {{ match.away_score }})</h5>
+            {% if home_goals or away_goals %}
+                <ul class="list-group">
+                    {% for goal in match.goals.all|dictsort:"minute" %}
+                        {% if goal.team == match.home_team %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-success me-2">{{ goal.minute }}'</span>
+                                    <strong>{{ goal.scorer.name }}</strong> ({{ match.home_team.name }})
+                                </div>
+                                <div>
+                                    <span class="text-success fw-bold">GOAL</span> ⚽
+                                </div>
+                            </li>
+                        {% else %}
+                            {# Flip the display for the away team to create a timeline effect #}
+                            <li class="list-group-item d-flex justify-content-between align-items-center flex-row-reverse">
+                                <div>
+                                    <span class="badge bg-success ms-2">{{ goal.minute }}'</span>
+                                    <strong>{{ goal.scorer.name }}</strong> ({{ match.away_team.name }})
+                                </div>
+                                <div>
+                                    ⚽ <span class="text-success fw-bold">GOAL</span>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center text-muted">No goals scored in this match.</p>
+            {% endif %}
+        </div>
+
+        {# --- CARDS SECTION --- #}
+        <div class="col-md-6 mt-4 mt-md-0">
+            <h5 class="text-center mb-3">🟨🟥 Cards Issued</h5>
+            {% if all_cards %}
+                <ul class="list-group">
+                    {% for card in all_cards %}
+                        {% if card.card_type == 'Y' %}
+                            {% with card_class='bg-warning text-dark' card_icon='&#x1F7E8;' %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge {{ card_class }} me-2">{{ card.minute }}'</span>
+                                        <strong>{{ card.player.name }}</strong> ({{ card.team.name }})
+                                    </div>
+                                    <div>
+                                        {{ card_icon|safe }} <span class="badge {{ card_class }}">{{ card.get_card_type_display }}</span>
+                                    </div>
+                                </li>
+                            {% endwith %}
+                        {% elif card.card_type == 'R' or card.card_type == '2Y' %}
+                            {% with card_class='bg-danger' card_icon='&#x1F7E5;' %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge {{ card_class }} me-2">{{ card.minute }}'</span>
+                                        <strong>{{ card.player.name }}</strong> ({{ card.team.name }})
+                                    </div>
+                                    <div>
+                                        {{ card_icon|safe }} <span class="badge {{ card_class }}">{{ card.get_card_type_display }}</span>
+                                    </div>
+                                </li>
+                            {% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-center text-muted">No cards were issued.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="mt-5 text-center">
+        <a href="{% url 'league:schedule' %}" class="btn btn-primary">&larr; Back to Schedule</a>
+    </div>
+
+{% endblock content %}

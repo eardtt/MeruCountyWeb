@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="text-center mb-5 text-primary fw-bold">League Standings</h2>
+
+    <div class="row">
+        
+        {# --- Current League Table (Left Column) --- #}
+        <div class="col-md-8 mb-5">
+            <h4 class="mb-4 border-bottom pb-2">Current League Table</h4>
+            
+            {% if teams %}
+                <div class="table-responsive shadow-lg rounded">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Team</th>
+                                <th scope="col">P</th>
+                                <th scope="col">W</th>
+                                <th scope="col">D</th>
+                                <th scope="col">L</th>
+                                <th scope="col">GF</th>
+                                <th scope="col">GA</th>
+                                <th scope="col">GD</th>
+                                <th scope="col" class="text-center bg-success">Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for team in teams %}
+                            <tr>
+                                <td class="fw-bold">{{ forloop.counter }}</td>
+                                <td>
+                                    {# Link to the Roster page with the uppercase slug fix #}
+                                    <a href="{% url 'league:roster' team_slug=team.slug|upper %}" class="text-decoration-none text-dark">
+                                        {{ team.name }}
+                                    </a>
+                                </td>
+                                <td>{{ team.p }}</td>
+                                <td>{{ team.w }}</td>
+                                <td>{{ team.d }}</td>
+                                <td>{{ team.l }}</td>
+                                <td>{{ team.gf }}</td>
+                                <td>{{ team.ga }}</td>
+                                <td>{{ team.gd }}</td>
+                                <td class="text-center fw-bold bg-success text-white">{{ team.pts }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center" role="alert">
+                    No team data available to display standings.
+                </div>
+            {% endif %}
+        </div>
+
+        {# --- Top Goal Scorers (Right Column) --- #}
+        <div class="col-md-4 mb-5">
+            <h4 class="mb-4 border-bottom pb-2">Top Goal Scorers ⚽</h4>
+            
+            {% if top_scorers %}
+                <div class="list-group shadow-sm">
+                    {% for scorer in top_scorers %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold me-2">{{ forloop.counter }}.</span>
+                                <strong>{{ scorer.player__name }}</strong> 
+                                <small class="text-muted d-block ps-4">{{ scorer.player__team__name }}</small>
+                            </div>
+                            <span class="badge bg-danger rounded-pill p-2">{{ scorer.total_goals }} Goals</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-warning text-center" role="alert">
+                    No goal scorer data available.
+                </div>
+            {% endif %}
+        </div>
+        
+    </div>
+
+{% endblock content %}

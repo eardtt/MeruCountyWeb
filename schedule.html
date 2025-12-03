@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="text-center mb-5">{{ page_title }}</h2>
+
+    <div class="mb-5">
+        <h3 class="text-primary border-bottom pb-2">🗓️ Upcoming Matches</h3>
+        
+        {% if upcoming_matches %}
+            {% for match in upcoming_matches %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <strong>Date:</strong> {{ match.match_date|date:"l, M d, Y" }}<br>
+                                <strong>Time:</strong> {{ match.match_date|time:"P" }}<br>
+                                <strong>Venue:</strong> {{ match.venue|default:"TBD" }}
+                            </div>
+                            <div class="col-md-7 text-center">
+                                <a href="{% url 'league:match_detail' match_pk=match.pk %}" class="h4 text-decoration-none">
+                                    {{ match.home_team.name }} <span class="text-muted">vs</span> {{ match.away_team.name }}
+                                </a>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <span class="badge bg-warning text-dark">Upcoming</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                All matches have been played. Check the **Results** section below!
+            </div>
+        {% endif %}
+    </div>
+
+    <hr class="my-5">
+
+    <div class="mb-5">
+        <h3 class="text-success border-bottom pb-2">✅ Match Results</h3>
+        
+        {% if played_matches %}
+            {% for match in played_matches %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <strong>Date:</strong> {{ match.match_date|date:"M d" }}<br>
+                                <strong>Venue:</strong> {{ match.venue|default:"N/A" }}
+                            </div>
+                            <div class="col-md-7 text-center">
+                                <a href="{% url 'league:match_detail' match_pk=match.pk %}" class="h4 text-decoration-none">
+                                    {{ match.home_team.name }} 
+                                    <span class="badge bg-dark">{{ match.home_score }}</span> 
+                                    - 
+                                    <span class="badge bg-dark">{{ match.away_score }}</span> 
+                                    {{ match.away_team.name }}
+                                </a>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <span class="badge bg-success">Final</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-warning">
+                No match results are available yet.
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

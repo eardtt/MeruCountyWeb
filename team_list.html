@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h2 class="text-center mb-5">All Registered Teams</h2>
+
+    {% if teams %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <ul class="list-group shadow-lg">
+                    {% for team in teams %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            
+                            {# THE FIX IS HERE: We apply |upper to ensure the slug is capitalized #}
+                            <a href="{% url 'league:roster' team_slug=team.slug|upper %}" 
+                               class="text-decoration-none h5 mb-0 text-dark fw-bold">
+                                {{ team.name }}
+                            </a>
+                            
+                            <span class="badge bg-primary rounded-pill">
+                                Wins: {{ team.w }} | Losses: {{ team.l }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-5" role="alert">
+            No teams are currently registered in the league.
+        </div>
+    {% endif %}
+
+{% endblock content %}
